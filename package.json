@@ -1,0 +1,12 @@
+{
+  "name": "traffic-light",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://verbart.github.io/traffic-light",
+  "scripts": {
+    "deploy": "gh-pages -d ./public"
+  },
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
+  }
+}
