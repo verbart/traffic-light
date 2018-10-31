@@ -22,31 +22,30 @@ TrafficLight.prototype.init = function (parentNode) {
 };
 
 TrafficLight.prototype.start = function () {
+  this.toggleLights();
+
   this.timer = setInterval(() => {
+    this.counter--;
+
     this.toggleLights();
 
     if (this.counter === 0) {
       this.isAllowed = !this.isAllowed;
       this.counter = this.interval;
+
       this.toggleLights();
     }
-
-    this.counter--;
   }, 1000);
 };
 
 TrafficLight.prototype.toggleLights = function () {
-  if (this.isAllowed) {
-    this.forbiddenLight.classList.remove('trafficLight__lamp_active');
-    this.allowedLight.classList.add('trafficLight__lamp_active');
+  var prevElement = this.isAllowed ? this.forbiddenLight : this.allowedLight;
+  var nextElement = this.isAllowed ? this.allowedLight : this.forbiddenLight;
 
-    this.forbiddenLight.textContent = this.counter || '';
-  } else {
-    this.allowedLight.classList.remove('trafficLight__lamp_active');
-    this.forbiddenLight.classList.add('trafficLight__lamp_active');
+  prevElement.classList.remove('trafficLight__lamp_active');
+  nextElement.classList.add('trafficLight__lamp_active');
 
-    this.allowedLight.textContent = this.counter || '';
-  }
+  prevElement.textContent = this.counter || '';
 };
 
 
