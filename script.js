@@ -1,52 +1,86 @@
-function TrafficLight(parentNode) {
+function TrafficLightWidget(parentNode) {
+  this.init(parentNode);
+
+  return {
+    getElement: this.getWidgetElement.bind(this),
+    playTrafficLight: this.playTrafficLight.bind(this),
+    pauseTrafficLight: this.pauseTrafficLight.bind(this),
+    disableTrafficLight: this.disableTrafficLight.bind(this),
+    resetTrafficLight: this.resetTrafficLight.bind(this)
+  };
+}
+
+TrafficLightWidget.prototype.init = function (parentNode) {
   this.isAllowed = false;
   this.interval = 3;
   this.counter = this.interval;
+  this.widgetElement = this.createWidgetElement();
+  this.allowedLight = this.widgetElement.querySelector('.trafficLight__lamp_allowed');
+  this.forbiddenLight = this.widgetElement.querySelector('.trafficLight__lamp_forbidden');
 
-  this.init(parentNode);
-}
+  parentNode && parentNode.append(this.widgetElement);
+};
 
-TrafficLight.prototype.init = function (parentNode) {
+TrafficLightWidget.prototype.createWidgetElement = function () {
   var templateHTML = document.getElementById('trafficLight__template').innerHTML;
   var templateWrapper = document.createElement('div');
 
   templateWrapper.innerHTML = templateHTML;
 
-  this.templateNode = document.importNode(templateWrapper.firstElementChild, true);
-  this.allowedLight = this.templateNode.querySelector('.trafficLight__lamp_allowed');
-  this.forbiddenLight = this.templateNode.querySelector('.trafficLight__lamp_forbidden');
-
-  parentNode.append(this.templateNode);
-
-  this.start();
+  return document.importNode(templateWrapper.firstElementChild, true);
 };
 
-TrafficLight.prototype.start = function () {
-  this.toggleLights();
+TrafficLightWidget.prototype.getWidgetElement = function () {
+  return this.widgetElement;
+};
+
+TrafficLightWidget.prototype.render = function () {
+  var prevLightElement = this.isAllowed ? this.forbiddenLight : this.allowedLight;
+  var nextLightElement = this.isAllowed ? this.allowedLight : this.forbiddenLight;
+
+  prevLightElement.classList.remove('trafficLight__lamp_active');
+  nextLightElement.classList[this.isEnabled ? 'add' : 'remove']('trafficLight__lamp_active');
+
+  prevLightElement.textContent = this.isEnabled ? this.counter || '' : '';
+};
+
+TrafficLightWidget.prototype.playTrafficLight = function () {
+  this.isEnabled = true;
+  this.render();
 
   this.timer = setInterval(() => {
     this.counter--;
 
-    this.toggleLights();
+    this.render();
 
     if (this.counter === 0) {
       this.isAllowed = !this.isAllowed;
       this.counter = this.interval;
 
-      this.toggleLights();
+      this.render();
     }
   }, 1000);
 };
 
-TrafficLight.prototype.toggleLights = function () {
-  var prevElement = this.isAllowed ? this.forbiddenLight : this.allowedLight;
-  var nextElement = this.isAllowed ? this.allowedLight : this.forbiddenLight;
-
-  prevElement.classList.remove('trafficLight__lamp_active');
-  nextElement.classList.add('trafficLight__lamp_active');
-
-  prevElement.textContent = this.counter || '';
+TrafficLightWidget.prototype.pauseTrafficLight = function () {
+  clearInterval(this.timer);
 };
 
+TrafficLightWidget.prototype.disableTrafficLight = function () {
+  this.pauseTrafficLight();
 
-for (let i = 0; i < 14; i++) new TrafficLight(document.querySelector('.container'));
+  this.isEnabled = false;
+  this.counter = this.interval;
+
+  this.render();
+};
+
+TrafficLightWidget.prototype.resetTrafficLight = function () {
+  this.disableTrafficLight();
+  this.playTrafficLight();
+};
+
+var container = document.querySelector('.container');
+var trafficLight = new TrafficLightWidget(container);
+
+trafficLight.playTrafficLight();
