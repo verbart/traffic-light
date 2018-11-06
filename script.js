@@ -12,6 +12,7 @@ function TrafficLightWidget(parentNode) {
 
 TrafficLightWidget.prototype.init = function (parentNode) {
   this.isAllowed = false;
+  this.isEnabled = false;
   this.interval = 3;
   this.counter = this.interval;
   this.widgetElement = this.createWidgetElement();
@@ -48,14 +49,23 @@ TrafficLightWidget.prototype.render = function () {
   var prevLightElement = this.isAllowed ? this.forbiddenLight : this.allowedLight;
   var nextLightElement = this.isAllowed ? this.allowedLight : this.forbiddenLight;
 
-  prevLightElement.classList.remove('trafficLight__lamp_active');
-  nextLightElement.classList[this.isPlaying ? 'add' : 'remove']('trafficLight__lamp_active');
+  if (this.isEnabled) {
+    prevLightElement.classList.remove('trafficLight__lamp_active');
+    prevLightElement.textContent = this.counter || '';
 
-  prevLightElement.textContent = this.isPlaying ? this.counter || '' : '';
+    nextLightElement.classList.add('trafficLight__lamp_active');
+  } else {
+    prevLightElement.textContent = '';
+    nextLightElement.textContent = '';
+
+    prevLightElement.classList.remove('trafficLight__lamp_active');
+    nextLightElement.classList.remove('trafficLight__lamp_active');
+  }
 };
 
 TrafficLightWidget.prototype.playTrafficLight = function () {
-  this.isPlaying = true;
+  this.isEnabled = true;
+
   this.render();
 
   this.timer = this.timer || setInterval(() => {
@@ -80,7 +90,8 @@ TrafficLightWidget.prototype.pauseTrafficLight = function () {
 TrafficLightWidget.prototype.stopTrafficLight = function () {
   this.pauseTrafficLight();
 
-  this.isPlaying = false;
+  this.isEnabled = false;
+  this.isAllowed = false;
   this.counter = this.interval;
 
   this.render();
