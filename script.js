@@ -5,7 +5,7 @@ function TrafficLightWidget(parentNode) {
     getElement: this.getWidgetElement.bind(this),
     playTrafficLight: this.playTrafficLight.bind(this),
     pauseTrafficLight: this.pauseTrafficLight.bind(this),
-    disableTrafficLight: this.disableTrafficLight.bind(this),
+    stopTrafficLight: this.stopTrafficLight.bind(this),
     resetTrafficLight: this.resetTrafficLight.bind(this)
   };
 }
@@ -17,6 +17,8 @@ TrafficLightWidget.prototype.init = function (parentNode) {
   this.widgetElement = this.createWidgetElement();
   this.allowedLight = this.widgetElement.querySelector('.trafficLight__lamp_allowed');
   this.forbiddenLight = this.widgetElement.querySelector('.trafficLight__lamp_forbidden');
+
+  this.widgetElement.addEventListener('click', this.onAction.bind(this));
 
   parentNode && parentNode.append(this.widgetElement);
 };
@@ -30,6 +32,14 @@ TrafficLightWidget.prototype.createWidgetElement = function () {
   return document.importNode(templateWrapper.firstElementChild, true);
 };
 
+TrafficLightWidget.prototype.onAction = function (e) {
+  var action = e.target.getAttribute('data-action');
+
+  if (action) {
+    this[action]();
+  }
+};
+
 TrafficLightWidget.prototype.getWidgetElement = function () {
   return this.widgetElement;
 };
@@ -39,16 +49,16 @@ TrafficLightWidget.prototype.render = function () {
   var nextLightElement = this.isAllowed ? this.allowedLight : this.forbiddenLight;
 
   prevLightElement.classList.remove('trafficLight__lamp_active');
-  nextLightElement.classList[this.isEnabled ? 'add' : 'remove']('trafficLight__lamp_active');
+  nextLightElement.classList[this.isPlaying ? 'add' : 'remove']('trafficLight__lamp_active');
 
-  prevLightElement.textContent = this.isEnabled ? this.counter || '' : '';
+  prevLightElement.textContent = this.isPlaying ? this.counter || '' : '';
 };
 
 TrafficLightWidget.prototype.playTrafficLight = function () {
-  this.isEnabled = true;
+  this.isPlaying = true;
   this.render();
 
-  this.timer = setInterval(() => {
+  this.timer = this.timer || setInterval(() => {
     this.counter--;
 
     this.render();
@@ -64,19 +74,20 @@ TrafficLightWidget.prototype.playTrafficLight = function () {
 
 TrafficLightWidget.prototype.pauseTrafficLight = function () {
   clearInterval(this.timer);
+  this.timer = null;
 };
 
-TrafficLightWidget.prototype.disableTrafficLight = function () {
+TrafficLightWidget.prototype.stopTrafficLight = function () {
   this.pauseTrafficLight();
 
-  this.isEnabled = false;
+  this.isPlaying = false;
   this.counter = this.interval;
 
   this.render();
 };
 
 TrafficLightWidget.prototype.resetTrafficLight = function () {
-  this.disableTrafficLight();
+  this.stopTrafficLight();
   this.playTrafficLight();
 };
 

@@ -19,8 +19,17 @@
 
     <script id="trafficLight__template" type="text/template">
       <div class="trafficLight">
-        <div class="trafficLight__lamp trafficLight__lamp_forbidden"></div>
-        <div class="trafficLight__lamp trafficLight__lamp_allowed"></div>
+        <div class="trafficLight__lamps">
+          <div class="trafficLight__lamp trafficLight__lamp_forbidden"></div>
+          <div class="trafficLight__lamp trafficLight__lamp_allowed"></div>
+        </div>
+
+        <div class="trafficLight__actions">
+          <div class="trafficLight__actionButton" data-action="playTrafficLight">play</div>
+          <div class="trafficLight__actionButton" data-action="pauseTrafficLight">pause</div>
+          <div class="trafficLight__actionButton" data-action="stopTrafficLight">stop</div>
+          <div class="trafficLight__actionButton" data-action="resetTrafficLight">reset</div>
+        </div>
       </div>
     </script>
   </body>
