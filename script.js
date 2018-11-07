@@ -30,7 +30,7 @@ TrafficLightWidget.prototype.createWidgetElement = function () {
 
   templateWrapper.innerHTML = templateHTML;
 
-  return document.importNode(templateWrapper.firstElementChild, true);
+  return templateWrapper.firstElementChild;
 };
 
 TrafficLightWidget.prototype.onAction = function (e) {
@@ -104,5 +104,10 @@ TrafficLightWidget.prototype.resetTrafficLight = function () {
 
 var container = document.querySelector('.container');
 var trafficLight = new TrafficLightWidget(container);
+var trafficLight2 = new TrafficLightWidget(container);
 
 trafficLight.playTrafficLight();
+
+setTimeout(function () {
+  trafficLight2.playTrafficLight();
+}, 1500);
